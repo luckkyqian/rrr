@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>福蕴郴州｜国潮文旅日历</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    :root{
+      --gold:#d8b36a;
+      --dark:#0e0f13;
+      --red:#8f1d1d;
+      --light:#f5efe3;
+      --text:#f3ead8;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      font-family:'Noto Serif SC', serif;
+      background:#090909;
+      color:var(--text);
+      overflow-x:hidden;
+    }
+
+    body::-webkit-scrollbar{
+      width:8px;
+    }
+
+    body::-webkit-scrollbar-thumb{
+      background:rgba(216,179,106,.5);
+      border-radius:10px;
+    }
+
+    .bg-pattern{
+      position:fixed;
+      inset:0;
+      background:
+        radial-gradient(circle at top, rgba(143,29,29,.35), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(216,179,106,.18), transparent 30%),
+        linear-gradient(to bottom,#120909,#090909);
+      z-index:-3;
+    }
+
+    .texture{
+      position:fixed;
+      inset:0;
+      opacity:.08;
+      background-image:url('assets/noise.png');
+      mix-blend-mode:soft-light;
+      z-index:-2;
+    }
+
+    .side-nav{
+      position:fixed;
+      right:18px;
+      top:50%;
+      transform:translateY(-50%);
+      z-index:99;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      backdrop-filter:blur(12px);
+      background:rgba(0,0,0,.25);
+      padding:12px 8px;
+      border-radius:30px;
+      border:1px solid rgba(216,179,106,.25);
+    }
+
+    .side-nav a{
+      text-decoration:none;
+      color:rgba(255,255,255,.55);
+      font-size:12px;
+      transition:.35s;
+      text-align:center;
+    }
+
+    .side-nav a:hover{
+      color:var(--gold);
+      transform:scale(1.15);
+    }
+
+    .hero{
+      height:100vh;
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      padding:40px 24px;
+      overflow:hidden;
+    }
+
+    .hero::before{
+      content:'';
+      position:absolute;
+      inset:0;
+      background:url('封面(1).jpg') center/cover no-repeat;
+      opacity:.35;
+      transform:scale(1.05);
+    }
+
+    .hero::after{
+      content:'';
+      position:absolute;
+      inset:0;
+      background:linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,.82));
+    }
+
+    .hero-content{
+      position:relative;
+      z-index:2;
+      max-width:900px;
+    }
+
+    .hero-sub{
+      letter-spacing:8px;
+      color:var(--gold);
+      margin-bottom:18px;
+      font-size:14px;
+    }
+
+    .hero-title{
+      font-size:clamp(52px,9vw,120px);
+      font-weight:900;
+      line-height:1.1;
+      margin-bottom:22px;
+      text-shadow:0 8px 30px rgba(0,0,0,.45);
+    }
+
+    .hero-desc{
+      font-size:16px;
+      line-height:2;
+      opacity:.88;
+      max-width:760px;
+      margin:auto;
+    }
+
+    .scroll-tip{
+      position:absolute;
+      bottom:40px;
+      z-index:5;
+      color:rgba(255,255,255,.7);
+      font-size:13px;
+      letter-spacing:3px;
+      animation:float 2s infinite;
+    }
+
+    @keyframes float{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(10px)}
+    }
+
+    .month-section{
+      min-height:100vh;
+      padding:90px 7vw;
+      display:flex;
+      align-items:center;
+      position:relative;
+      border-top:1px solid rgba(255,255,255,.06);
+      overflow:hidden;
+    }
+
+    .month-bg{
+      position:absolute;
+      inset:0;
+      background-size:cover;
+      background-position:center;
+      opacity:.22;
+      transform:scale(1.08);
+      transition:1.2s ease;
+    }
+
+    .month-section:hover .month-bg{
+      transform:scale(1.02);
+      opacity:.32;
+    }
+
+    .month-overlay{
+      position:absolute;
+      inset:0;
+      background:linear-gradient(to right, rgba(0,0,0,.92), rgba(0,0,0,.55));
+    }
+
+    .month-content{
+      position:relative;
+      z-index:3;
+      width:100%;
+      max-width:760px;
+    }
+
+    .month-num{
+      font-size:92px;
+      font-weight:900;
+      color:rgba(216,179,106,.18);
+      line-height:1;
+      margin-bottom:10px;
+    }
+
+    .month-title{
+      font-size:clamp(28px,5vw,52px);
+      margin-bottom:24px;
+      color:var(--gold);
+      letter-spacing:2px;
+    }
+
+    .month-text{
+      font-size:16px;
+      line-height:2.1;
+      color:rgba(255,255,255,.88);
+    }
+
+    .seal{
+      display:inline-flex;
+      margin-top:32px;
+      border:1px solid rgba(216,179,106,.35);
+      padding:10px 18px;
+      border-radius:40px;
+      font-size:13px;
+      color:var(--gold);
+      letter-spacing:3px;
+      backdrop-filter:blur(10px);
+      background:rgba(255,255,255,.04);
+    }
+
+    .footer{
+      padding:80px 20px;
+      text-align:center;
+      background:#0b0b0b;
+      border-top:1px solid rgba(255,255,255,.06);
+    }
+
+    .footer h2{
+      font-size:42px;
+      color:var(--gold);
+      margin-bottom:18px;
+    }
+
+    .footer p{
+      line-height:2;
+      opacity:.75;
+    }
+
+    .light{
+      position:absolute;
+      width:420px;
+      height:420px;
+      background:radial-gradient(circle, rgba(216,179,106,.16), transparent 70%);
+      filter:blur(30px);
+      border-radius:50%;
+      z-index:1;
+    }
+
+    .light.left{
+      left:-120px;
+      top:20%;
+    }
+
+    .light.right{
+      right:-120px;
+      bottom:10%;
+    }
+
+    @media(max-width:768px){
+
+      .side-nav{
+        right:8px;
+        padding:10px 6px;
+      }
+
+      .side-nav a{
+        font-size:10px;
+      }
+
+      .hero-desc{
+        font-size:14px;
+      }
+
+      .month-section{
+        padding:80px 24px;
+      }
+
+      .month-num{
+        font-size:64px;
+      }
+
+      .month-title{
+        font-size:34px;
+      }
+
+      .month-text{
+        font-size:14px;
+        line-height:2;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-pattern"></div>
+  <div class="texture"></div>
+
+  <nav class="side-nav">
+    <a href="#m1">1月</a>
+    <a href="#m2">2月</a>
+    <a href="#m3">3月</a>
+    <a href="#m4">4月</a>
+    <a href="#m5">5月</a>
+    <a href="#m6">6月</a>
+    <a href="#m7">7月</a>
+    <a href="#m8">8月</a>
+    <a href="#m9">9月</a>
+    <a href="#m10">10月</a>
+    <a href="#m11">11月</a>
+    <a href="#m12">12月</a>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-sub">2027 CHENZHOU CULTURAL CALENDAR</div>
+      <h1 class="hero-title">福蕴郴州</h1>
+      <p class="hero-desc">
+        一城山水，一卷千年。以十二时序串联郴州人文、山河与精神风骨，
+        在国潮美学与沉浸式H5交互中，重访湘南福地的自然秘境与文化温度。
+      </p>
+    </div>
+
+    <div class="scroll-tip">向下滑动开启福城之旅</div>
+  </section>
+
+  <!-- 1月 龙女温泉 -->
+  <section class="month-section" id="m1">
+    <div class="month-bg" style="background-image:url('内容 (1)(1).png')"></div>
+    <div class="month-overlay"></div>
+    <div class="light left"></div>
+
+    <div class="month-content">
+      <div class="month-num">01</div>
+      <h2 class="month-title">龙女温泉</h2>
+      <p class="month-text">
+        龙女温泉，藏着《柳毅传书》的千年传说。40℃富硒暖泉自地底涌出，清澈温润，可饮可浴。四面环山，林深气净，是冬日疗愈身心、滋养福韵的天然康养胜地。
+      </p>
+      <div class="seal">福泉暖冬 · 湘南秘境</div>
+    </div>
+  </section>
+
+  <!-- 2月 福泉山庄 -->
+  <section class="month-section" id="m2">
+    <div class="month-bg" style="background-image:url('内容 (2)(1).png')"></div>
+    <div class="month-overlay"></div>
+    <div class="light right"></div>
+
+    <div class="month-content">
+      <div class="month-num">02</div>
+      <h2 class="month-title">福泉山庄</h2>
+      <p class="month-text">
+        福泉山庄，华南养生秘境。98℃天然氡泉暖润身心，万亩竹海环绕，湘南民居韵味悠长。二月栖居山林，泡福泉、纳福气，藏尽春日康养的惬意。
+      </p>
+      <div class="seal">竹海氡泉 · 春山纳福</div>
+    </div>
+  </section>
+
+  <!-- 3月 沙洲红色旅游景区 -->
+  <section class="month-section" id="m3">
+    <div class="month-bg" style="background-image:url('内容 (3)(1).png')"></div>
+    <div class="month-overlay"></div>
+
+    <div class="month-content">
+      <div class="month-num">03</div>
+      <h2 class="month-title">沙洲红韵</h2>
+      <p class="month-text">
+        这里是"半条被子"故事发源地，青瓦古巷藏烽火记忆，一砖一瓦皆映军民深情。三月寻红，在沙洲读懂温暖中国的初心力量。
+      </p>
+      <div class="seal">红色记忆 · 初心永续</div>
+    </div>
+  </section>
+
+  <!-- 4月 仰天湖大草原景区 -->
+  <section class="month-section" id="m4">
+    <div class="month-bg" style="background-image:url('内容 (4)(1).png')"></div>
+    <div class="month-overlay"></div>
+    <div class="light left"></div>
+
+    <div class="month-content">
+      <div class="month-num">04</div>
+      <h2 class="month-title">仰天湖大草原</h2>
+      <p class="month-text">
+        万顷草甸连绵起伏，云影漫过山巅，牛羊闲散漫步，山间清风澄澈明净。这里是藏在南国的高山草原，远离城市喧嚣，满目青绿治愈人心。春日光华漫洒，一步一景皆是诗意。
+      </p>
+      <div class="seal">南国草原 · 山野治愈</div>
+    </div>
+  </section>
+
+  <!-- 5月 飞天山景区 -->
+  <section class="month-section" id="m5">
+    <div class="month-bg" style="background-image:url('内容 (5)(1).png')"></div>
+    <div class="month-overlay"></div>
+
+    <div class="month-content">
+      <div class="month-num">05</div>
+      <h2 class="month-title">飞天山</h2>
+      <p class="month-text">
+        郴州飞天山集丹霞奇貌、碧水江湾、绝壁溶洞于一体。丹峰叠翠，江雾悠然，古寨藏于青山之间。徐霞客曾赞"无寸土不丽，无一山不奇"，一步一景皆是山水风骨。
+      </p>
+      <div class="seal">丹霞秘境 · 江山如画</div>
+    </div>
+  </section>
+
+  <!-- 6月 板梁古村 -->
+  <section class="month-section" id="m6">
+    <div class="month-bg" style="background-image:url('内容 (6)(1).png')"></div>
+    <div class="month-overlay"></div>
+    <div class="light right"></div>
+
+    <div class="month-content">
+      <div class="month-num">06</div>
+      <h2 class="month-title">板梁古村</h2>
+      <p class="month-text">
+        百年板梁古村依山傍水而建，青石板巷纵横交错，青砖黛瓦沉淀岁月风华。古桥流水、宗祠静谧，一砖一瓦都藏着湘南千年民俗底蕴。
+      </p>
+      <div class="seal">湘南古韵 · 烟火人间</div>
+    </div>
+  </section>
+
+  <!-- 7月 东江湖旅游区 -->
+  <section class="month-section" id="m7">
+    <div class="month-bg" style="background-image:url('内容 (7)(1).png')"></div>
+    <div class="month-overlay"></div>
+    <div class="light left"></div>
+
+    <div class="month-content">
+      <div class="month-num">07</div>
+      <h2 class="month-title">东江湖旅游区</h2>
+      <p class="month-text">
+        东江湖碧波万顷，雾漫小东江如仙境缥缈。渔夫撒网、晨雾轻纱，湖光山色间尽显湘南灵秀。夏日至此，泛舟湖上，清风拂面，水天一色，是避暑纳凉的绝佳去处。
+      </p>
+      <div class="seal">雾漫东江 · 湖光山色</div>
+    </div>
+  </section>
+
+  <!-- 8月 莽山五指峰景区 -->
+  <section class="month-section" id="m8">
+    <div class="month-bg" style="background-image:url('内容 (8)(1).png')"></div>
+    <div class="month-overlay"></div>
+
+    <div class="month-content">
+      <div class="month-num">08</div>
+      <h2 class="month-title">莽山五指峰</h2>
+      <p class="month-text">
+        群峰巍峨、层峦叠嶂，奇峰直入云端，栈道悬空山间。满目林海苍翠葱郁，云雾流转穿梭山谷，四季清凉舒适，是天然的避暑氧吧。
+      </p>
+      <div class="seal">云海清风 · 盛夏仙境</div>
+    </div>
+  </section>
+
+  <!-- 9月 裕后街 -->
+  <section class="month-section" id="m9">
+    <div class="month-bg" style="background-image:url('内容 (9)(1).png')"></div>
+    <div class="month-overlay"></div>
+    <div class="light left"></div>
+
+    <div class="month-content">
+      <div class="month-num">09</div>
+      <h2 class="month-title">裕后街</h2>
+      <p class="month-text">
+        郴州裕后街承载千年商埠文脉，是古城最具烟火气息的老街。青石板路蜿蜒绵长，古桥流水相映成趣，灯火流光映照着湘南旧时风华。
+      </p>
+      <div class="seal">千年古街 · 人间烟火</div>
+    </div>
+  </section>
+
+  <!-- 10月 中国女排竹棚训练馆 -->
+  <section class="month-section" id="m10">
+    <div class="month-bg" style="background-image:url('内容 (10)(1).png')"></div>
+    <div class="month-overlay"></div>
+
+    <div class="month-content">
+      <div class="month-num">10</div>
+      <h2 class="month-title">中国女排竹棚训练馆</h2>
+      <p class="month-text">
+        郴州竹棚训练馆，是中国女排"五连冠"传奇的启航地，更是女排精神的淬炼场。姑娘们曾在简陋棚屋中滚一身泥、磨几层皮，用热血铸就拼搏丰碑。
+      </p>
+      <div class="seal">女排精神 · 热血传承</div>
+    </div>
+  </section>
+
+  <!-- 11月 郴州博物馆 -->
+  <section class="month-section" id="m11">
+    <div class="month-bg" style="background-image:url('内容 (11)(1).png')"></div>
+    <div class="month-overlay"></div>
+    <div class="light right"></div>
+
+    <div class="month-content">
+      <div class="month-num">11</div>
+      <h2 class="month-title">郴州博物馆</h2>
+      <p class="month-text">
+        郴州博物馆承载千年湘南记忆，馆藏古韵珍宝，诉说一城岁月沧桑。器物无言，历史有声，于静默时光中回望历史、品读人文。
+      </p>
+      <div class="seal">湘南文脉 · 千年风骨</div>
+    </div>
+  </section>
+
+  <!-- 12月 有色矿晶 -->
+  <section class="month-section" id="m12">
+    <div class="month-bg" style="background-image:url('内容 (12)(1).png')"></div>
+    <div class="month-overlay"></div>
+
+    <div class="month-content">
+      <div class="month-num">12</div>
+      <h2 class="month-title">矿晶之城</h2>
+      <p class="month-text">
+        郴州被誉为世界有色金属博物馆，天然矿晶晶莹剔透、色彩斑斓，历经亿万年地质淬炼，凝结大地深处的精华与灵气。
+      </p>
+      <div class="seal">晶光璀璨 · 山河造物</div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <h2>福蕴郴州</h2>
+    <p>
+      一页山河，一卷福城。<br>
+      以国潮视觉重构郴州文旅记忆，打造沉浸式城市文化H5体验。
+    </p>
+  </footer>
+
+  <script>
+    const sections = document.querySelectorAll('.month-section');
+
+    const observer = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          entry.target.animate([
+            {opacity:0, transform:'translateY(80px)'},
+            {opacity:1, transform:'translateY(0)'}
+          ],{
+            duration:900,
+            fill:'forwards',
+            easing:'cubic-bezier(.2,.8,.2,1)'
+          });
+        }
+      })
+    },{threshold:.15});
+
+    sections.forEach(section=>{
+      section.style.opacity = 0;
+      observer.observe(section);
+    });
+  </script>
+
+</body>
+</html>
